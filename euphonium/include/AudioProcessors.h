@@ -42,7 +42,6 @@ public:
         }
         if (signedness) {
             int16_t *psample;
-            uint32_t pmax;
             psample = (int16_t *)(data);
             for (int32_t i = 0; i < (nBytes / 2); i++) {
                 psample[i] += 0x8000;
