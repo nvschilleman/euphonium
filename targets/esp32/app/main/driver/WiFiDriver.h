@@ -51,6 +51,7 @@ class WiFiStateChangedEvent: public Event {
 
 extern WiFiState globalWiFiState;
 
+void setWiFiEventBus(std::shared_ptr<EventBus> _luaEventBus);
 void startFastScan();
 void initializeWiFiStack();
 void tryToConnect(std::string ssid, std::string password, bool fromAp);

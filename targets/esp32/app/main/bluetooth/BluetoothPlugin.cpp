@@ -8,7 +8,7 @@ static void sink_data_handler(const uint8_t *data, uint32_t len) {
         size_t bytesWritten = 0;
         while (bytesWritten < len) {
             bytesWritten +=
-                mainAudioBuffer->write(data + bytesWritten, len - bytesWritten);
+                mainBluetoothPlugin->audioBuffer->write(data + bytesWritten, len - bytesWritten);
         }
     }
 }
@@ -17,7 +17,7 @@ static bool bt_sink_cmd_handler(bt_sink_cmd_t cmd, va_list args) {
     switch (cmd) {
     case BT_SINK_AUDIO_STARTED: {
 
-        //mainAudioBuffer->lockAccess();
+        //mainBluetoothPlugin->audioBuffer->lockAccess();
         BELL_LOG(info, "bluetooth", "Audio sink started");
         mainBluetoothPlugin->setStatus(ModuleStatus::RUNNING);
         break;
@@ -29,7 +29,7 @@ static bool bt_sink_cmd_handler(bt_sink_cmd_t cmd, va_list args) {
     }
     case BT_SINK_PLAY: {
         auto event = std::make_unique<PauseChangedEvent>(false);
-        mainEventBus->postEvent(std::move(event));
+        mainBluetoothPlugin->luaEventBus->postEvent(std::move(event));
         // LOG_INFO("BT playing");
         break;
     }
@@ -39,7 +39,7 @@ static bool bt_sink_cmd_handler(bt_sink_cmd_t cmd, va_list args) {
         break;
     case BT_SINK_PAUSE: {
         auto event = std::make_unique<PauseChangedEvent>(true);
-        mainEventBus->postEvent(std::move(event));
+        mainBluetoothPlugin->luaEventBus->postEvent(std::move(event));
         // LOG_INFO("BT paused, just silence");
         break;
     }
@@ -47,7 +47,7 @@ static bool bt_sink_cmd_handler(bt_sink_cmd_t cmd, va_list args) {
         uint32_t sampleRate = va_arg(args, u32_t);
         mainBluetoothPlugin->setStatus(ModuleStatus::RUNNING);
         BELL_LOG(info, "bluetooth", "Sample rate changed to %d", sampleRate);
-        mainAudioBuffer->configureOutput(AudioOutput::SampleFormat::INT16,
+        mainBluetoothPlugin->audioBuffer->configureOutput(AudioOutput::SampleFormat::INT16,
                                          sampleRate);
         break;
     }
@@ -59,7 +59,7 @@ static bool bt_sink_cmd_handler(bt_sink_cmd_t cmd, va_list args) {
             std::string(title), std::string(album), std::string(artist),
             "bluetooth", "https://i.imgur.com/Fuu73lv.png");
         EUPH_LOG(info, "bluetooth", "Song name changed");
-        mainEventBus->postEvent(std::move(event));
+        mainBluetoothPlugin->luaEventBus->postEvent(std::move(event));
 
         break;
     }
@@ -69,7 +69,7 @@ static bool bt_sink_cmd_handler(bt_sink_cmd_t cmd, va_list args) {
         volume = 100 * powf(volume / 128.0f, 3);
         auto event = std::make_unique<VolumeChangedEvent>(volume);
         EUPH_LOG(info, "bluetooth", "Volume changed");
-        mainEventBus->postEvent(std::move(event));
+        mainBluetoothPlugin->luaEventBus->postEvent(std::move(event));
         break;
     }
     default:
@@ -86,7 +86,7 @@ BluetoothPlugin::BluetoothPlugin() : bell::Task("bt_euph", 4 * 1024, 3, 0, false
 
 void BluetoothPlugin::shutdown() {
     EUPH_LOG(info, "bluetooth", "Shutting down...");
-    //mainAudioBuffer->unlockAccess();
+    //mainBluetoothPlugin->audioBuffer->unlockAccess();
     setStatus(ModuleStatus::SHUTDOWN);
 }
 
@@ -110,17 +110,17 @@ void BluetoothPlugin::runTask() {
                 bt_disconnect();
                 BELL_SLEEP_MS(1500);
                 //bt_sink_deinit();
-                mainAudioBuffer->unlockAccess();
+                mainBluetoothPlugin->audioBuffer->unlockAccess();
                 status = ModuleStatus::SHUTDOWN;
                 //bt_sink_init(bt_sink_cmd_handler, sink_data_handler);
             }
 
             if (event == BTEvent::LockAccess) {
                 BELL_LOG(info, "bluetooth", "Locking access...");
-                mainAudioBuffer->shutdownExcept(name);
-                mainAudioBuffer->configureOutput(AudioOutput::SampleFormat::INT16,
+                mainBluetoothPlugin->audioBuffer->shutdownExcept(name);
+                mainBluetoothPlugin->audioBuffer->configureOutput(AudioOutput::SampleFormat::INT16,
                                                  44100);
-                mainAudioBuffer->lockAccess();
+                mainBluetoothPlugin->audioBuffer->lockAccess();
                 status = ModuleStatus::RUNNING;
             }
 

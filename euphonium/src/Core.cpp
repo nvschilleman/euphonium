@@ -8,15 +8,10 @@
 #include "esp_attr.h"
 #endif
 
-std::shared_ptr<MainAudioBuffer> mainAudioBuffer;
-std::shared_ptr<EventBus> mainEventBus;
-
 Core::Core() : bell::Task("Core", 4 * 1024, 2, 0) {
     audioBuffer = std::make_shared<MainAudioBuffer>();
     luaEventBus = std::make_shared<EventBus>();
     mainPersistor = std::make_shared<ConfigPersistor>();
-    mainAudioBuffer = audioBuffer;
-    mainEventBus = luaEventBus;
 
     audioProcessor = std::make_shared<AudioProcessors>();
 
@@ -83,7 +78,7 @@ void Core::loadPlugins(std::shared_ptr<ScriptLoader> loader) {
     loader->loadScript("internal/init.be", berry);
 
     // Emit ON_INIT hook event
-    mainEventBus->postEvent(std::move(std::make_unique<HookEvent>("ON_INIT")));
+    luaEventBus->postEvent(std::move(std::make_unique<HookEvent>("ON_INIT")));
     berry->execute_string("load_plugins()");
 }
 
@@ -99,7 +94,7 @@ void Core::handleScriptingThread() {
 }
 
 void Core::selectAudioOutput(std::shared_ptr<AudioOutput> output) {
-    mainAudioBuffer->audioOutput = output;
+    audioBuffer->audioOutput = output;
     currentOutput = output;
     this->outputConnected = true;
 }

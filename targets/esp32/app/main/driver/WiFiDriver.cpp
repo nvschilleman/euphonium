@@ -3,11 +3,17 @@
 WiFiState globalWiFiState;
 wifi_ap_record_t ap_info[DEFAULT_SCAN_LIST_SIZE];
 
+std::shared_ptr<EventBus> luaEventBus;
+
+void setWiFiEventBus(std::shared_ptr<EventBus> _luaEventBus) {
+    luaEventBus = _luaEventBus;
+}
+
 void publishWiFiEvent(std::string eventType, berry::map networks = berry::map(),
                       std::string ipAddr = "") {
     auto event =
         std::make_unique<WiFiStateChangedEvent>(eventType, networks, ipAddr);
-    mainEventBus->postEvent(std::move(event));
+    luaEventBus->postEvent(std::move(event));
 }
 
 static void event_handler(void *arg, esp_event_base_t event_base,

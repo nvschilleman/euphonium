@@ -26,12 +26,13 @@ bool ScriptsUpdater::versionMatches() {
 }
 
 void ScriptsUpdater::update() {
-    mainEventBus = std::make_shared<EventBus>();
+    std::shared_ptr<EventBus> luaEventBus = std::make_shared<EventBus>();
+    setWiFiEventBus(luaEventBus);
     initializeWiFiStack();
 
     // Prepare lua event thread
     auto subscriber = dynamic_cast<EventSubscriber *>(this);
-    mainEventBus->addListener(EventType::LUA_MAIN_EVENT, *subscriber);
+    luaEventBus->addListener(EventType::LUA_MAIN_EVENT, *subscriber);
 
     std::ifstream indexFile("/spiffs/wifi.config.json");
     std::string indexContent((std::istreambuf_iterator<char>(indexFile)),
@@ -53,7 +54,7 @@ void ScriptsUpdater::update() {
 
     while (true) {
         BELL_SLEEP_MS(100);
-        mainEventBus->update();
+        luaEventBus->update();
     }
 }
 

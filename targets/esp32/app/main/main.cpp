@@ -7,6 +7,7 @@
 #include "OTAPlugin.h"
 #include "SPIFFSScriptLoader.h"
 #include "ScriptsUpdater.h"
+#include "WiFiDriver.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_spiffs.h"
@@ -41,6 +42,7 @@ static void euphoniumTask(void *pvParameters) {
 
     if (updater->versionMatches()) {
         auto core = std::make_shared<Core>();
+        setWiFiEventBus(core->luaEventBus);
         auto bluetoothPlugin = std::make_shared<BluetoothPlugin>();
         mainBluetoothPlugin = bluetoothPlugin;
         core->registeredPlugins.push_back(

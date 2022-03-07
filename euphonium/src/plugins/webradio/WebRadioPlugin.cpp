@@ -88,7 +88,7 @@ void WebRadioPlugin::runTask() {
                 this->luaEventBus->postEvent(std::move(event));
             }
             //audioStream->close();
-            mainAudioBuffer->unlockAccess();
+            audioBuffer->unlockAccess();
         }
     }
 }
