@@ -63,9 +63,10 @@ void ConfigPersistor::runTask() {
                     contentType = "text/html";
                 }
 
-                std::string prefix = "../../../web/dist/";
 #ifdef ESP_PLATFORM
-                prefix = "/spiffs/";
+                std::string prefix = "/spiffs/";
+#else
+                std::string prefix = "../../../web/dist/";
 #endif
                 BELL_LOG(info, "persistor", "Sending file: %s",
                          fileName.c_str());
@@ -101,9 +102,11 @@ void ConfigPersistor::runTask() {
                                                                fileName);
                 mainServer->respond(response);
             } else {
-                std::string prefix = "";
+
 #ifndef ESP_PLATFORM
-                prefix = "../../../euphonium/scripts/";
+                std::string prefix = "../../../euphonium/scripts/";
+#else
+                std::string prefix = "";
 #endif
                 std::string value =
                     scriptLoader->loadFile(prefix + request.key);
