@@ -1,18 +1,31 @@
 #include "BluetoothPlugin.h"
 #include "portaudio.h"
+#include <dbus/dbus.h>
 
 #define SAMPLE_RATE       (44100)
 #define FRAMES_PER_BUFFER (1024)
 #define NUM_CHANNELS      (2)
-/* #define DITHER_FLAG     (paDitherOff) */
-#define DITHER_FLAG       (0) /**/
-
 #define PA_SAMPLE_TYPE    paInt16
 typedef short SAMPLE;
 #define SAMPLE_SILENCE    (0)
 
 // @TODO Refactor all of this to proper C++. Global shared_ptr is not ideal.
 std::shared_ptr<BluetoothPlugin> mainBluetoothPlugin;
+
+static bool dbus_message_iter_get_basic_boolean(DBusMessageIter *iter) {
+	dbus_bool_t tmp = FALSE;
+	return dbus_message_iter_get_basic(iter, &tmp), tmp;
+}
+
+static unsigned int dbus_message_iter_get_basic_integer(DBusMessageIter *iter) {
+	dbus_uint32_t tmp = 0;
+	return dbus_message_iter_get_basic(iter, &tmp), tmp;
+}
+
+static const char *dbus_message_iter_get_basic_string(DBusMessageIter *iter) {
+	const char *tmp = "";
+	return dbus_message_iter_get_basic(iter, &tmp), tmp;
+}
 
 int inputCallback( const void *inputBuffer, void *outputBuffer,
                            unsigned long framesPerBuffer,
@@ -137,17 +150,36 @@ void BluetoothPlugin::shutdown() {
 void BluetoothPlugin::runTask() {
     BTEvent event;
 
-    PaStreamParameters  inputParameters;
-    PaStream*           stream;
+    PaStreamParameters inputParameters;
+    PaStream* stream;
+
+    DBusError err;
+    DBusConnection* conn = NULL;
+    int ret;
 
     while (true) {
-        if(1){
-            event = BTEvent::LockAccess;
-//        if (this->btEventQueue.wpop(event)) {
+        if (this->btEventQueue.wtpop(event, 100)) {
             if (event == BTEvent::Initialize) {
-                std::string deviceName = std::any_cast<std::string>(config["name"]);
-//                snprintf(bt_sink_name, sizeof bt_sink_name, "%s", deviceName.c_str());
-//                bt_sink_init(bt_sink_cmd_handler, sink_data_handler);
+                // initialise the errors
+                dbus_error_init( &err );
+                // connect to the bus
+                conn = dbus_bus_get( DBUS_BUS_SYSTEM, &err );
+                if ( dbus_error_is_set( &err ) ) {
+                    BELL_LOG(error, "bluetooth", "DBUS connection error");
+                    dbus_error_free( &err );
+                }
+                if ( NULL == conn ) {
+                    continue;
+                }
+
+                // add a rule for which messages we want to see
+                dbus_bus_add_match( conn,
+                      "type='signal',interface='org.freedesktop.DBus.Properties'",
+                      &err ); // see signals from the given interface
+                dbus_connection_flush( conn );
+                if ( dbus_error_is_set( &err ) ) {
+                    BELL_LOG(error, "bluetooth", "DBUS Match error");
+                }
             }
 
             if (event == BTEvent::Deinitialize) {
@@ -157,12 +189,10 @@ void BluetoothPlugin::runTask() {
             if (event == BTEvent::Disconnect) {
                 BELL_LOG(info, "bluetooth", "Disconnecting...");
                 closeStream(stream);
-//                bt_disconnect();
+                Pa_Terminate();Pa_Initialize();
                 BELL_SLEEP_MS(1500);
-                //bt_sink_deinit();
                 mainAudioBuffer->unlockAccess();
                 status = ModuleStatus::SHUTDOWN;
-                //bt_sink_init(bt_sink_cmd_handler, sink_data_handler);
             }
 
             if (event == BTEvent::LockAccess) {
@@ -181,7 +211,10 @@ void BluetoothPlugin::runTask() {
 
                 if(!device_found){
                     BELL_LOG(error, "bluetooth", "Bluetooth input sink not found");
-                    return;
+                    btEventQueue.push(BTEvent::LockAccess);
+                    Pa_Terminate();Pa_Initialize();
+                    BELL_SLEEP_MS(2000);
+                    continue;
                 }
                 inputParameters.channelCount = 2;                    /* stereo input */
                 inputParameters.sampleFormat = PA_SAMPLE_TYPE;
@@ -208,8 +241,63 @@ void BluetoothPlugin::runTask() {
                 status = ModuleStatus::RUNNING;
             }
 
-        } else {
-            BELL_SLEEP_MS(1000);
+        }
+        if(conn != NULL) {
+            // non blocking read of the next available message
+            dbus_connection_read_write( conn, 0 );
+            DBusMessage *msg = dbus_connection_pop_message( conn );
+            // loop again if we haven't read a message
+            if(msg != NULL ) {
+                DBusMessageIter iter;
+                dbus_message_iter_init(msg, &iter);
+                if(dbus_message_iter_has_next(&iter)){
+                    dbus_message_iter_next(&iter);
+                    if(dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_ARRAY){
+                        DBusMessageIter iter_array;
+                        dbus_message_iter_recurse(&iter, &iter_array);
+                        if(dbus_message_iter_get_arg_type(&iter_array) == DBUS_TYPE_DICT_ENTRY){
+                            DBusMessageIter iter_entry;
+                            DBusMessageIter iter_entry_val;
+                            const char *key;
+                            dbus_message_iter_recurse(&iter_array, &iter_entry);
+                            dbus_message_iter_get_basic(&iter_entry, &key);
+                            dbus_message_iter_next(&iter_entry);
+                            dbus_message_iter_recurse(&iter_entry, &iter_entry_val);
+                            if(dbus_message_iter_get_arg_type(&iter_entry_val) == DBUS_TYPE_STRING) {
+                                if(strcmp(key, "Status") == 0){
+                                    if(strcmp(dbus_message_iter_get_basic_string(&iter_entry_val), "playing") == 0){
+                                        auto event = std::make_unique<PauseChangedEvent>(false);
+                                        mainEventBus->postEvent(std::move(event));
+                                    }else if(strcmp(dbus_message_iter_get_basic_string(&iter_entry_val), "paused") == 0){
+                                        auto event = std::make_unique<PauseChangedEvent>(true);
+                                        mainEventBus->postEvent(std::move(event));
+                                    }
+                                }
+                            } else if(dbus_message_iter_get_arg_type(&iter_entry_val) == DBUS_TYPE_UINT16){
+                                if(strcmp(key, "Volume") == 0){
+                                    uint16_t val;
+                                    dbus_message_iter_get_basic(&iter_entry_val, &val);
+                                    printf("Vol: %d\n", val);
+                                }
+                            } else if(dbus_message_iter_get_arg_type(&iter_entry_val) == DBUS_TYPE_BOOLEAN){
+                                if(strcmp(key, "Connected") == 0){
+                                    bool val;
+                                    dbus_message_iter_get_basic(&iter_entry_val, &val);
+                                    if(val == true){
+                                        mainBluetoothPlugin->setStatus(ModuleStatus::RUNNING);
+                                    } else {
+                                        mainBluetoothPlugin->setStatus(ModuleStatus::SHUTDOWN);
+                                        btEventQueue.push(BTEvent::Disconnect);
+                                    }
+                                    printf("Connected: %d\n", val);
+                                }
+                            }
+                        }
+                    }
+                }
+                // free the message
+                dbus_message_unref( msg );
+            }
         }
     }
 }
