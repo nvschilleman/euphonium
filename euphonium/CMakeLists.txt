@@ -20,6 +20,7 @@ else()
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
     add_definitions(-Wno-sequence-point)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/bluez-alsa ${CMAKE_CURRENT_BINARY_DIR}/bluez-alsa)
 endif()
 
 if(UNIX AND NOT APPLE)
@@ -37,6 +38,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
 add_library(euphonium STATIC ${SOURCES})
-target_link_libraries(euphonium PRIVATE bell cspot berry ${EXTRA_REQ_LIBS})
+target_link_libraries(euphonium PRIVATE bell cspot berry bluez-alsa ${EXTRA_REQ_LIBS})
 
-target_include_directories(euphonium PUBLIC "include" "protos" bell cspot ${EXTRA_REQ_LIBS} ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(euphonium PUBLIC "include" "protos" bell cspot bluez-alsa ${EXTRA_REQ_LIBS} ${CMAKE_CURRENT_BINARY_DIR})
