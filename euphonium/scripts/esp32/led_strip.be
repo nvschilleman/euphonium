@@ -16,18 +16,13 @@ LED_WS2813 = 4
 
 class LEDStrip
     var channel
-    var length
+    var ledcount
     var brightness
-    def init(type, pin, len, chan, brightness)
+    def init(type, pin, ledc, chan)
         self.channel = chan
-        self.length = len
-        if (brightness != nil)
-            self.brightness = brightness
-        else
-            self.brightness = 255
-        end
+        self.ledcount = len
 
-        get_native('led', 'create_strip')(self.channel, 0, self.length, pin, self.brightness)
+        get_native('led', 'create_strip')(self.channel, type, self.ledcount, pin)
     end
     
 
@@ -36,6 +31,6 @@ class LEDStrip
     end
 
     def show()
-        get_native('led', 'show')(self.channel)
+        get_native('led', 'Show')(self.channel)
     end
 end
