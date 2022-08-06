@@ -20,6 +20,6 @@ set(COMPONENT_SRCS
     "main.cpp"
 )
 
-set(COMPONENT_ADD_INCLUDEDIRS "." "driver/." "driver/led/." "bluetooth/." "ota/.")
+set(COMPONENT_ADD_INCLUDEDIRS "." "driver/." "driver/led/." "driver/led/NeoPixelBus-idf/." "driver/led/NeoPixelBus-idf/NeoPixelBus/src/." "driver/led/NeoPixelBus-idf/NeoPixelBus/src/internal/." "bluetooth/." "ota/.")
 register_component(REQUIRES "euphonium")
 component_compile_options(-std=gnu++17)

@@ -9,8 +9,8 @@ enum {
   ledTypeEnd
 };
 
-typedef NeoPixelBus<NeoGrbFeature, NeoEsp32RmtN800KbpsMethod> WS2812_GRB_t;
-typedef NeoPixelBus<NeoGrbwFeature, NeoEsp32RmtNSk6812Method> SK6812_GRBW_t;
+// typedef NeoPixelBus<NeoGrbFeature, NeoEsp32RmtN800KbpsMethod> WS2812_GRB_t;
+// typedef NeoPixelBus<NeoGrbwFeature, NeoEsp32RmtNSk6812Method> SK6812_GRBW_t;
 
 std::map<uint8_t, std::unique_ptr<WS2812_GRB_t>> registeredStrips;
 
@@ -27,22 +27,26 @@ void setPixelRgb(int RmtChannel, int index, int r, int g, int b) {
 
 void showPixels(int RmtChannel) { registeredStrips[RmtChannel]->Show(); }
 
-void createStrip(int RmtChannel, int32_t ledType, uint16_t ledCount, uint8_t ledPin) {
+void createStrip(int RmtChannel, int ledType, int ledCount, int ledPin) {
     if (ledType < 1) { ledType = 1; }
     if (ledType >= ledTypeEnd) { ledType = ledTypeEnd - 1; }
     if (RmtChannel < 0) { RmtChannel = 0; }
-
-    switch (ledType) {
-        case WS2812_GRB:
-            registeredStrips.insert(
+    
+    registeredStrips.insert(
                 {RmtChannel, std::make_unique<WS2812_GRB_t>(ledCount, ledPin, (NeoBusChannel) RmtChannel)});
-            break;
-        case SK6812_GRBW:
-            // registeredStrips.insert(
-            //     {RmtChannel, std::make_unique<SK6812_GRBW_t>(ledCount, ledPin, (NeoBusChannel) RmtChannel)});
-            print('SK6812 Class call');
-            break;
-    }
+    
+    // switch (ledType) {
+    //     case WS2812_GRB:
+    //         registeredStrips.insert(
+    //             {RmtChannel, std::make_unique<WS2812_GRB_t>(ledCount, ledPin, (NeoBusChannel) RmtChannel)});
+    //         break;
+    //     case SK6812_GRBW:
+    //         // registeredStrips.insert(
+    //         //     {RmtChannel, std::make_unique<SK6812_GRBW_t>(ledCount, ledPin, (NeoBusChannel) RmtChannel)});
+    //         print('SK6812 Class call');
+    //         break;
+    // }
+
 }
 
 void exportLEDDriver(std::shared_ptr<berry::VmState> berry) {

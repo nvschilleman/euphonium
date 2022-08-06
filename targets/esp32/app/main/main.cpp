@@ -18,7 +18,7 @@
 #include "mdns.h"
 #include "nvs_flash.h"
 #include "sdkconfig.h"
-#include <LedStrip.h>
+#include <LEDDriver.h>
 #include <arpa/inet.h>
 #include <esp_heap_caps.h>
 #include <memory.h>
