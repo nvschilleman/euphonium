@@ -9,9 +9,9 @@ class JP2137 : DACDriver
     end
 
     def init_i2s()
-        test_strip = LEDStrip(0, 4, 12, 0, 10)
-        test_strip[0] = [255, 0, 0]
-        test_strip.show()
+        # test_strip = LEDStrip(0, 4, 12, 0, 10)
+        # test_strip[0] = [255, 0, 0]
+        # test_strip.show()
         # PINOUT: SDA: 23, SCL: 22, SDATA: 26, LRCLK: 25, BCLK: 5
         # All of I2S init logic goes here
         var ADDR = 0x20

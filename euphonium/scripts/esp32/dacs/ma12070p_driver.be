@@ -56,7 +56,8 @@ class MA12070P : DACDriver
         # Unmute Amplifier 
         gpio.digital_write(8, gpio.HIGH)
         sleep_ms(300)
-        volume_strip = LEDStrip(0, 4, 12, 0, 10)       
+        # volume_strip = LEDStrip(0, 4, 12, 0, 10)      
+        volume_strip = nil 
     end
 
     def unload_i2s()

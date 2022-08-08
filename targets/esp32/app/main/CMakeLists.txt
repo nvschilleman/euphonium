@@ -7,6 +7,20 @@ set(COMPONENT_SRCS
     "driver/I2SDriver.cpp"
     "driver/GPIODriver.cpp"
     "driver/led/LEDDriver.cpp"
+    "driver/led/NeoPixelBus-idf/internal/HsbColor.cpp"
+    "driver/led/NeoPixelBus-idf/internal/HslColor.cpp"
+    "driver/led/NeoPixelBus-idf/internal/HtmlColor.cpp"
+    "driver/led/NeoPixelBus-idf/internal/HtmlColorNames.cpp"
+    "driver/led/NeoPixelBus-idf/internal/HtmlColorNameStrings.cpp"
+    "driver/led/NeoPixelBus-idf/internal/HtmlColorShortNames.cpp"
+    "driver/led/NeoPixelBus-idf/internal/NeoEsp32RmtMethod.cpp"
+    "driver/led/NeoPixelBus-idf/internal/NeoGamma.cpp"
+    "driver/led/NeoPixelBus-idf/internal/NeoPixelAnimator.cpp"
+    "driver/led/NeoPixelBus-idf/internal/Rgb48Color.cpp"
+    "driver/led/NeoPixelBus-idf/internal/RgbColor.cpp"
+    "driver/led/NeoPixelBus-idf/internal/RgbColorBase.cpp"
+    "driver/led/NeoPixelBus-idf/internal/RgbwColor.cpp"
+    "driver/led/NeoPixelBus-idf/internal/SegmentDigit.cpp"
     # "driver/led/Color.cpp"
     # "driver/led/LedStrip.cpp"
     "driver/Rotary.cpp"
@@ -20,6 +34,7 @@ set(COMPONENT_SRCS
     "main.cpp"
 )
 
-set(COMPONENT_ADD_INCLUDEDIRS "." "driver/." "driver/led/." "driver/led/NeoPixelBus-idf/." "driver/led/NeoPixelBus-idf/NeoPixelBus/src/." "driver/led/NeoPixelBus-idf/NeoPixelBus/src/internal/." "bluetooth/." "ota/.")
+set(ARDUINO_ARCH_ESP32 "1")
+set(COMPONENT_ADD_INCLUDEDIRS "." "driver/." "driver/led/." "driver/led/NeoPixelBus-idf/." "bluetooth/." "ota/.")
 register_component(REQUIRES "euphonium")
 component_compile_options(-std=gnu++17)
