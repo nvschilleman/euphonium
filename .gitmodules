@@ -7,6 +7,3 @@
 [submodule "targets/esp32/app/components/esp_littlefs"]
 	path = targets/esp32/app/components/esp_littlefs
 	url = https://github.com/joltwallet/esp_littlefs.git
-[submodule "NeoPixelBus-idf"]
-	path = targets/esp32/app/main/driver/led/NeoPixelBus-idf
-	url = https://github.com/nvschilleman/NeoPixelBus-idf
