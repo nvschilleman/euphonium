@@ -69,7 +69,5 @@ void exportLEDDriver(std::shared_ptr<berry::VmState> berry) {
     berry->export_function("Clear", &clearPixels, "led");
     berry->export_function("setPixelColor", &setPixelColor, "led");
     berry->export_function("create_strip", &createStrip, "led");
-    // berry->export_function("setPixelRgb", &setPixelRgb, "led");
-    
-    
+    // berry->export_function("setPixelRgb", &setPixelRgb, "led");   
 }

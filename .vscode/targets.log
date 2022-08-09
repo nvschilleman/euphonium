@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Aug 06 00:16:07 2022
+# Make data base, printed on Mon Aug 08 23:40:59 2022
 
 # Variables
 
@@ -37,7 +37,7 @@ MAKE_COMMAND := C:/ProgramData/chocolatey/lib/make/tools/install/bin/make.exe
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_3088_QFAXEACPXGHBAQIT
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_4320_GSRKZZHAQQTFDDCY
 # environment
 FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
@@ -53,7 +53,7 @@ PORTAUDIO_INCLUDE_DIR = C:\portaudio\include
 # automatic
 %F = $(notdir $%)
 # environment
-VSCODE_CODE_CACHE_PATH = C:\Users\Nova\AppData\Roaming\Code\CachedData\3b889b090b5ad5793f524b5d1d39fda662b96a2a
+VSCODE_CODE_CACHE_PATH = C:\Users\Nova\AppData\Roaming\Code\CachedData\da76f93349a72022ca4670c1b84860304616aaa2
 # environment
 LANG = C
 # default
@@ -69,7 +69,7 @@ MAKEFLAGS = pqrR
 # environment
 ONEDRIVE = C:\Users\Nova\OneDrive
 # makefile
-CURDIR := c:/Users/Nova/euphonium-1
+CURDIR := c:/Users/Nova/euphonium
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # automatic
@@ -89,7 +89,7 @@ MAKEFILE_LIST :=
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 3088
+VSCODE_PID = 4320
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # automatic
@@ -185,7 +185,7 @@ ELECTRON_RUN_AS_NODE = 1
 # environment
 TEMP = C:\Users\Nova\AppData\Local\Temp
 # environment
-VSCODE_IPC_HOOK = \\.\pipe\fec0e847fa324a3bcc886f1576c3e80d-1.69.2-main-sock
+VSCODE_IPC_HOOK = \\.\pipe\fec0e847fa324a3bcc886f1576c3e80d-1.70.0-main-sock
 # default
 .RECIPEPREFIX := 
 # automatic
@@ -211,9 +211,9 @@ PROCESSOR_IDENTIFIER = AMD64 Family 25 Model 33 Stepping 0, AuthenticAMD
 
 # Directories
 
-# . (key c:/Users/Nova/euphonium-1, mtime 1659737766): 24 files, no impossibilities.
+# . (key c:/Users/Nova/euphonium, mtime 1659994795): 23 files, no impossibilities.
 
-# 24 files, no impossibilities in 1 directories.
+# 23 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -270,12 +270,12 @@ GNUmakefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 31 / storage = 307 B / avg = 9 B
-# current buf: size = 8174 B / used = 307 B / count = 31 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 30 / storage = 280 B / avg = 9 B
+# current buf: size = 8174 B / used = 280 B / count = 30 / avg = 9 B
 
-# strcache performance: lookups = 34 / hit rate = 8%
+# strcache performance: lookups = 33 / hit rate = 9%
 # hash-table stats:
-# Load=31/8192=0%, Rehash=0, Collisions=0/34=0%
-# Finished Make data base on Sat Aug 06 00:16:07 2022
+# Load=30/8192=0%, Rehash=0, Collisions=0/33=0%
+# Finished Make data base on Mon Aug 08 23:40:59 2022
 
  

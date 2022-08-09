@@ -1,6 +1,6 @@
 make.exe --dry-run --always-make --keep-going --print-directory
-make: Entering directory 'c:/Users/Nova/euphonium-1'
-make: Leaving directory 'c:/Users/Nova/euphonium-1'
+make: Entering directory 'c:/Users/Nova/euphonium'
+make: Leaving directory 'c:/Users/Nova/euphonium'
  
 make: *** No targets specified and no makefile found.  Stop.
 
