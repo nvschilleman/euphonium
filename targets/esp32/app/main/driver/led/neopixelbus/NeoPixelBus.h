@@ -1,7 +1,9 @@
 /*-------------------------------------------------------------------------
-NeoPixel library 
+NeoPixel library for ESP-IDF
 
 Written by Michael C. Miller.
+
+
 
 I invest time and resources providing this open source code,
 please support me by dontating (see https://github.com/Makuna/NeoPixelBus)

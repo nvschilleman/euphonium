@@ -129,8 +129,8 @@ uint16_t ledGamma10(uint8_t v) {
 
 // Legacy function
 uint8_t ledGamma(uint8_t v) {
-  if (val < 0) { val = 0; }
-  if (val >= (1<<8)) { val = (1<<8) - 1; };
+  if (v < 0) { v = 0; } 
+  if (v >= (1<<8)) { v = (1<<8) - 1; };
   return change10to8(ledGamma10(v));
 }
 

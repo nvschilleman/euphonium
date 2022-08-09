@@ -1,15 +1,15 @@
 /**
- * Port of NeoPixelBus to run under ESP-IDF
- * Modified for use with Euphonium
- * Origin repo: https://github.com/Makuna/NeoPixelBus
+ * NeoPixelBerry-IDF 
  * 
- * minimize modifications on the original NeoPixelBus implementation
+ * Port of NeoPixelBus to Berry lang for ESP-IDF
+ * 
+ * File: Arduino.h
+ * Arduino header for ESP32
  */
 
 #pragma once
 
 #include "sdkconfig.h"
-#include "pgmspace_esp32.h"
 
 #include <cstdint>
 #include <cmath>
@@ -27,6 +27,17 @@
 // used in HtmlColor.h
 #include <string>
 typedef std::string  String;
+
+#define strncpy_P     strncpy
+#define strlen_P      strlen
+
+#define PROGMEM
+#define PGM_P         const char *
+
+#define pgm_read_dword(addr) ({ \
+  typeof(addr) _addr = (addr); \
+  *(const unsigned long *)(_addr); \
+})
 
 extern "C" {
 #endif // __cplusplus
