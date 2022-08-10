@@ -1,11 +1,4 @@
-#include "BellLogger.h"
-#include <memory>
-#include <map>
-#include "BerryBind.h"
-#include "LEDDriver.h"
-
-uint16_t changeUIntScale(uint16_t inum, uint16_t ifrom_min, uint16_t ifrom_max,
-                                       uint16_t ito_min, uint16_t ito_max) {
+uint16_t changeUIntScale(uint16_t inum, uint16_t ifrom_min, uint16_t ifrom_max, uint16_t ito_min, uint16_t ito_max) {
   // guard-rails
   if (ifrom_min >= ifrom_max) {
     return (ito_min > ito_max ? ito_max : ito_min);  // invalid input, return arbitrary value
@@ -143,7 +136,3 @@ uint8_t ledGamma(uint8_t v) {
 //     be_return(vm); // Return
 // }
 
-void exportLEDGamma(std::shared_ptr<berry::VmState> berry) {
-    berry->export_function("ledGamma", &ledGamma, "led");
-    berry->export_function("scale_uint", &changeUIntScale, "led"); 
-}

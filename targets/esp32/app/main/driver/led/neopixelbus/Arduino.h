@@ -34,6 +34,7 @@ typedef std::string  String;
 #define PROGMEM
 #define PGM_P         const char *
 
+#define pgm_read_byte(addr)   (*(const unsigned char *)(addr))
 #define pgm_read_dword(addr) ({ \
   typeof(addr) _addr = (addr); \
   *(const unsigned long *)(_addr); \

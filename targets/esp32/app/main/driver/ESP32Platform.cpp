@@ -129,7 +129,7 @@ void ESP32PlatformPlugin::setupBindings() {
     exportI2SDriver(berry);
     exportGPIODriver(berry);
     exportLEDDriver(berry);
-    exportLEDGamma(berry);
+    // exportLEDGamma(berry);
 
     // Export platform functions to berry
     berry->export_this("register_button", this,

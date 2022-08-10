@@ -7,7 +7,7 @@ set(COMPONENT_SRCS
     "driver/I2SDriver.cpp"
     "driver/GPIODriver.cpp"
     "driver/led/LEDDriver.cpp"
-    "driver/led/LEDGamma.cpp"
+    # "driver/led/LEDGamma.cpp"
     "driver/led/neopixelbus/internal/HsbColor.cpp"
     "driver/led/neopixelbus/internal/HslColor.cpp"
     "driver/led/neopixelbus/internal/HtmlColor.cpp"
