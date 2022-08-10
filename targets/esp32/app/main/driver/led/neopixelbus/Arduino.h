@@ -28,17 +28,14 @@
 #include <string>
 typedef std::string  String;
 
-#define strncpy_P     strncpy
-#define strlen_P      strlen
+#define strncpy_P     std::strncpy
+#define strlen_P      std::strlen
 
 #define PROGMEM
 #define PGM_P         const char *
 
-#define pgm_read_byte(addr)   (*(const unsigned char *)(addr))
-#define pgm_read_dword(addr) ({ \
-  typeof(addr) _addr = (addr); \
-  *(const unsigned long *)(_addr); \
-})
+#define pgm_read_byte(const void* p)   (*(const uint8_t *)(p))
+#define pgm_read_dword(const void* p)   (*(const uint16_t *)(p))
 
 extern "C" {
 #endif // __cplusplus

@@ -7,7 +7,7 @@
 #include "BerryBind.h"
 #include "NeoPixelBus.h"
 
-typedef NeoPixelBus<NeoGrbFeature, NeoEsp32RmtN800KbpsMethod> WS2812_GRB_t;
+typedef NeoPixelBus<NeoGrbFeature, NeoEsp32RmtNWs2812xMethod> WS2812_GRB_t;
 typedef NeoPixelBus<NeoGrbwFeature, NeoEsp32RmtNSk6812Method> SK6812_GRBW_t;
 
 extern std::map<uint32_t, std::unique_ptr<WS2812_GRB_t>> registeredStrips;
