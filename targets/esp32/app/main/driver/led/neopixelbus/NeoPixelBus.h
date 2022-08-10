@@ -96,7 +96,7 @@ License along with NeoPixel.  If not, see
 
 // needs to be defined in CMakeLists (for .cpp compilation) and also here (for use in the .h file)
 #define ARDUINO_ARCH_ESP32 1
-#define NEOPIXEL_ESP32_RMT_DEFAULT 1
+// #define NEOPIXEL_ESP32_RMT_DEFAULT 1
 
 //#include "internal/NeoEsp32I2sMethod.h"     //haven't ported this yet
 #include "internal/NeoEsp32RmtMethod.h"
