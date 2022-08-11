@@ -34,11 +34,19 @@ typedef std::string  String;
 #define PROGMEM
 #define PGM_P         const char *
 
-#define pgm_read_byte(const void* p)   (*(const uint8_t *)(p))
-#define pgm_read_dword(const void* p)   (*(const uint16_t *)(p))
+#define pgm_read_byte(addr)   (*(const unsigned char *)(addr))
+// #define pgm_read_dword(addr void* p)   (*(const uint16_t *)(addr))
 
 extern "C" {
 #endif // __cplusplus
+
+// inline uint8_t pgm_read_byte(const void* p) {
+//     return *(const uint8_t*)(p);
+// }
+
+inline uint16_t pgm_read_dword(const void* p) {
+    return *(const uint16_t*)(p);
+}
 
 inline unsigned long micros() {
     struct timeval tv;
