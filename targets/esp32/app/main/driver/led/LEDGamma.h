@@ -1,3 +1,19 @@
+/*-------------------------------------------------------------------------
+
+NeoPixelBerry 
+NeoPixelBus functions mapped to the Berry language
+
+NeoPixelBus is written by Michael C. Miller.
+Berry mapping by Noël Schilleman
+
+This library contains parts of code taken from Tasmota by Theo Arends
+Based on the work of Stephan Hadinger
+
+Intended for use with Euphonium tiny audio platform
+https://github.com/feelfreelinux/euphonium
+
+-------------------------------------------------------------------------*/
+
 uint16_t changeUIntScale(uint16_t inum, uint16_t ifrom_min, uint16_t ifrom_max, uint16_t ito_min, uint16_t ito_max) {
   // guard-rails
   if (ifrom_min >= ifrom_max) {

@@ -1,3 +1,19 @@
+/*-------------------------------------------------------------------------
+
+NeoPixelBerry 
+NeoPixelBus functions mapped to the Berry language
+
+NeoPixelBus is written by Michael C. Miller.
+Berry mapping by Noël Schilleman
+
+This library contains parts of code taken from Tasmota by Theo Arends
+Based on the work of Stephan Hadinger
+
+Intended for use with Euphonium tiny audio platform
+https://github.com/feelfreelinux/euphonium
+
+-------------------------------------------------------------------------*/
+
 #ifndef EUPH_LEDDRIVER_H
 #define EUPH_LEDDRIVER_H
 

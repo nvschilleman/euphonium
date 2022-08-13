@@ -1,3 +1,20 @@
+/*-------------------------------------------------------------------------
+
+NeoPixelBerry 
+NeoPixelBus functions mapped to the Berry language
+
+NeoPixelBus is written by Michael C. Miller.
+Berry mapping by Noël Schilleman
+
+This library contains parts of code taken from Tasmota by Theo Arends
+Based on the work of Stephan Hadinger
+
+Intended for use with Euphonium tiny audio platform
+https://github.com/feelfreelinux/euphonium
+
+-------------------------------------------------------------------------*/
+
+
 #include "LEDDriver.h"
 #include "LEDGamma.h"
 #include "BellUtils.h"
@@ -11,16 +28,7 @@ enum {
   ledTypeEnd
 };
 
-// extern typedef NeoPixelBus<NeoGrbFeature, NeoEsp32RmtN800KbpsMethod> WS2812_GRB_t;
-// extern typedef NeoPixelBus<NeoGrbwFeature, NeoEsp32RmtNSk6812Method> SK6812_GRBW_t;
-
 std::map<uint32_t, std::unique_ptr<WS2812_GRB_t>> registeredStrips;
-
-// void setPixelRgb(int rmtChannel, int index, int r, int g, int b) {
-//     (*registeredStrips[rmtChannel].get()) index =
-//         RgbColor{static_cast<uint8_t>(r), static_cast<uint8_t>(g),
-//             static_cast<uint8_t>(b)};
-// }
 
 void begin(int rmtChannel) {
     BELL_LOG(info, "NeoPixelBus", "Initializing NeoPixelBus object");
@@ -29,10 +37,6 @@ void begin(int rmtChannel) {
 
 void showPixels(int rmtChannel) { registeredStrips[rmtChannel]->Show(); }
 
-// void setPixelRgb(int rmtChannel, int index, int r, int g, int b) {
-//     registeredStrips[rmtChannel]->SetPixelColor(index, RgbColor(r, g, b));
-// }
-
 void setPixelColor(int rmtChannel, int idx, int col) {
     int32_t index = idx;
     uint32_t rgbw = col;
@@ -40,10 +44,8 @@ void setPixelColor(int rmtChannel, int idx, int col) {
     uint8_t r = (rgbw & 0xFF0000) >> 16;
     uint8_t g = (rgbw & 0xFF00) >> 8;
     uint8_t b = (rgbw & 0xFF);
-
-            
+    
     BELL_LOG(info, "NeoPixelBus", "Setting LED color");
-
     registeredStrips[rmtChannel]->SetPixelColor(index, RgbColor(r,g,b));
 }
 
@@ -59,11 +61,12 @@ void createStrip(int rmt, int led_type, int led_count, int led_pin) {
     if (ledType >= ledTypeEnd) { ledType = ledTypeEnd - 1; }
     if (rmtChannel < 0) { rmtChannel = 0; }
     
-    BELL_LOG(info, "NeoPixelBus", "Created LED strip");
+
     registeredStrips.insert(
         // {rmtChannel, std::make_unique<WS2812_GRB_t>(ledCount, ledPin)});
         {rmtChannel, std::make_unique<WS2812_GRB_t>(ledCount, ledPin, (NeoBusChannel) rmtChannel)});
     
+    BELL_LOG(info, "NeoPixelBus", "LED Strip registered");
 
     // switch (ledType) {
     //     case WS2812_GRB:
@@ -100,6 +103,5 @@ void exportLEDDriver(std::shared_ptr<berry::VmState> berry) {
     berry->export_function("setPixelColor", &setPixelColor, "led");
     berry->export_function("create_strip", &createStrip, "led");
     berry->export_function("led_gamma", &led_gamma, "led");
-    berry->export_function("scale_uint", &scale_uint, "led");
-    // berry->export_function("setPixelRgb", &setPixelRgb, "led");   
+    berry->export_function("scale_uint", &scale_uint, "led");  
 }
