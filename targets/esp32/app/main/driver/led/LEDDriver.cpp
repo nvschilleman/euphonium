@@ -28,28 +28,14 @@ enum {
   ledTypeEnd
 };
 
-std::map<uint32_t, std::unique_ptr<WS2812_GRB_t>> registeredStrips;
+std::map<uint32_t, std::unique_ptr<WS2812_GRB_t>> registeredWS2812;
+std::map<uint32_t, std::unique_ptr<SK6812_GRBW_t>> registeredSK6812;
 
-void begin(int rmtChannel) {
-    BELL_LOG(info, "NeoPixelBus", "Initializing NeoPixelBus object");
-    registeredStrips[rmtChannel]->Begin();
-}
+registeredWS2812.merge(registeredSK6812)
 
-void showPixels(int rmtChannel) { registeredStrips[rmtChannel]->Show(); }
 
-void setPixelColor(int rmtChannel, int idx, int col) {
-    int32_t index = idx;
-    uint32_t rgbw = col;
-    uint8_t w = (rgbw & 0xFF000000) >> 24;
-    uint8_t r = (rgbw & 0xFF0000) >> 16;
-    uint8_t g = (rgbw & 0xFF00) >> 8;
-    uint8_t b = (rgbw & 0xFF);
-    
-    BELL_LOG(info, "NeoPixelBus", "Setting LED color");
-    registeredStrips[rmtChannel]->SetPixelColor(index, RgbColor(r,g,b));
-}
 
-void clearPixels(int rmtChannel) { registeredStrips[rmtChannel]->ClearTo(0); }
+//Merging this??
 
 void createStrip(int rmt, int led_type, int led_count, int led_pin) {
     int32_t ledCount = led_count;
@@ -62,7 +48,7 @@ void createStrip(int rmt, int led_type, int led_count, int led_pin) {
     if (rmtChannel < 0) { rmtChannel = 0; }
     
 
-    registeredStrips.insert(
+    registeredLeds.insert(
         // {rmtChannel, std::make_unique<WS2812_GRB_t>(ledCount, ledPin)});
         {rmtChannel, std::make_unique<WS2812_GRB_t>(ledCount, ledPin, (NeoBusChannel) rmtChannel)});
     
@@ -70,17 +56,86 @@ void createStrip(int rmt, int led_type, int led_count, int led_pin) {
 
     // switch (ledType) {
     //     case WS2812_GRB:
-    //         registeredStrips.insert(
+    //         registeredLeds.insert(
     //             {rmtChannel, std::make_unique<WS2812_GRB_t>(ledCount, ledPin, (NeoBusChannel) rmtChannel)});
     //         break;
     //     case SK6812_GRBW:
-    //         // registeredStrips.insert(
+    //         // registeredLeds.insert(
     //         //     {rmtChannel, std::make_unique<SK6812_GRBW_t>(ledCount, ledPin, (NeoBusChannel) rmtChannel)});
     //         print('SK6812 Class call');
     //         break;
     // }
 
 }
+
+void begin(int rmtChannel) {
+    BELL_LOG(info, "NeoPixelBus", "Initializing NeoPixelBus object");
+    registeredLeds[rmtChannel]->Begin();
+}
+
+void show(int rmtChannel) {
+    registeredLeds[rmtChannel]->Show();
+}
+
+void canShow(int rmtChannel) {
+    return registeredLeds[rmtChannel]->CanShow();
+}
+
+void isDirty(int rmtChannel) {
+    return registeredLeds[rmtChannel]->IsDirty();
+}
+
+void dirty(int rmtChannel) {
+    registeredLeds[rmtChannel]->Dirty();
+}
+
+void pixels(int rmtChannel) {
+    uint8_t * pixels;
+    pixels = registeredLeds[rmtChannel]->Pixels();
+
+    return pixels;
+}
+
+void pixelSize(int rmtChannel) {
+    return registeredLeds[rmtChannel]->PixelSize();
+}
+
+void pixelCount(int rmtChannel) {
+    return registeredLeds[rmtChannel]->PixelCount();
+}
+
+void clearTo(int rmtChannel, int col) {
+    uint32_t rgbw = col;
+    uint8_t w = (rgbw & 0xFF000000) >> 24;
+    uint8_t r = (rgbw & 0xFF0000) >> 16;
+    uint8_t g = (rgbw & 0xFF00) >> 8;
+    uint8_t b = (rgbw & 0xFF);
+    
+    BELL_LOG(info, "NeoPixelBus", "Clearing LED Strip");
+    registeredLeds[rmtChannel]->ClearTo(RgbColor(r, g, b));
+}
+
+void setPixelColor(int rmtChannel, int idx, int col) {
+    int32_t index = idx;
+    uint32_t rgbw = col;
+    uint8_t w = (rgbw & 0xFF000000) >> 24;
+    uint8_t r = (rgbw & 0xFF0000) >> 16;
+    uint8_t g = (rgbw & 0xFF00) >> 8;
+    uint8_t b = (rgbw & 0xFF);
+    
+    BELL_LOG(info, "NeoPixelBus", "Setting LED color");
+    registeredLeds[rmtChannel]->SetPixelColor(index, RgbColor(r,g,b));
+}
+
+void getPixelColor(int rmtChannel, int idx) {
+    int32_t index = idx;
+    RgbColor rgb = registeredLeds[rmtChannel]->GetPixelColor(index); 
+
+    BELL_LOG(info, "NeoPixelBus", "Getting LED color");
+    return (rgb.R << 16) | (rgb.G << 8) | rgb.B);
+}
+
+// Some Tasmota functions which take care of brightness instead of NeopixelBrightnessBus
 
 int scale_uint(int n,int fmn,int fmx, int imn,int imx){
     uint16_t num = n;
@@ -97,11 +152,18 @@ int led_gamma(int v){
 }
 
 void exportLEDDriver(std::shared_ptr<berry::VmState> berry) {
+    berry->export_function("NeoPixelBerry", &createStrip, "led");
     berry->export_function("Begin", &begin, "led");
-    berry->export_function("Show", &showPixels, "led");
-    berry->export_function("Clear", &clearPixels, "led");
-    berry->export_function("setPixelColor", &setPixelColor, "led");
-    berry->export_function("create_strip", &createStrip, "led");
+    berry->export_function("Show", &show, "led");
+    berry->export_function("CanShow", &canShow, "led");
+    berry->export_function("IsDirty", &isDirty, "led");
+    berry->export_function("Dirty", &dirty, "led");
+    berry->export_function("Pixels", &pixels, "led");
+    berry->export_function("PixelSize", &pixelSize, "led");
+    berry->export_function("PixelCount", &pixelCount, "led");
+    berry->export_function("ClearTo", &clearTo, "led");
+    berry->export_function("SetPixelColor", &setPixelColor, "led");
+    berry->export_function("GetPixelColor", &getPixelColor, "led");
     berry->export_function("led_gamma", &led_gamma, "led");
     berry->export_function("scale_uint", &scale_uint, "led");  
 }
